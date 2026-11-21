@@ -1,5 +1,6 @@
 name: Docker validation
 
+# Validate Docker support on every push and pull request.
 on:
   push:
   pull_request:
