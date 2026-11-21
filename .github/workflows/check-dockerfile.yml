@@ -8,13 +8,21 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: docker-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   docker-build:
     name: Dockerfile and image build
     runs-on: [self-hosted, linux, ubuntu, docker, shell, backend]
+    env:
+      DOCKER_CONFIG: ${{ runner.temp }}/docker-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Verify Dockerfile exists
         run: |
@@ -26,3 +34,19 @@ jobs:
 
       - name: Build Docker image
         run: docker build --tag "s13-training-camps:check-${GITHUB_SHA}" .
+
+      - name: Log in to Docker Hub
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+        uses: docker/login-action@v3
+        with:
+          username: empire20
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Publish Docker image
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+        run: |
+          set -eu
+          docker tag "s13-training-camps:check-${GITHUB_SHA}" "empire20/s13-training-camps:${GITHUB_SHA}"
+          docker tag "s13-training-camps:check-${GITHUB_SHA}" empire20/s13-training-camps:latest
+          docker push "empire20/s13-training-camps:${GITHUB_SHA}"
+          docker push empire20/s13-training-camps:latest
