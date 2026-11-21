@@ -50,4 +50,6 @@ Use `docker volume rm s13-training-camps-data` only when you intentionally want 
 
 ## CI/CD
 
-`.github/workflows/deploy-s13-training-camps.yml` builds the single image from the root `Dockerfile`, removes the existing container, starts the replacement with the persistent volume, and verifies its health. No repository variables or secrets are required for this student demo.
+`.github/workflows/check-dockerfile.yml` runs on every push and pull request. The `Dockerfile and image build` check fails if the root `Dockerfile` is missing or the Docker image cannot be built. It uses a self-hosted runner with the labels `linux`, `ubuntu`, `docker`, `shell`, and `backend`, and requires access to Docker.
+
+To enforce this before merging, configure branch protection on the default branch to require pull requests and the `Dockerfile and image build` status check. Disable direct pushes and bypasses for the developers covered by the rule. The workflow must run once before the check may appear in the branch protection settings.

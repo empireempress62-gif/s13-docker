@@ -1,0 +1,27 @@
+name: Docker validation
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  docker-build:
+    name: Dockerfile and image build
+    runs-on: [self-hosted, linux, ubuntu, docker, shell, backend]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify Dockerfile exists
+        run: |
+          set -eu
+          if [ ! -f Dockerfile ]; then
+            echo "The root Dockerfile is required. Restore it before merging."
+            exit 1
+          fi
+
+      - name: Build Docker image
+        run: docker build --tag "s13-training-camps:check-${GITHUB_SHA}" .
