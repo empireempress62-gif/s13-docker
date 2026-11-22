@@ -16,13 +16,18 @@ jobs:
   docker-build:
     name: Dockerfile and image build
     runs-on: [self-hosted, linux, ubuntu, docker, shell, backend]
-    env:
-      DOCKER_CONFIG: ${{ runner.temp }}/docker-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           persist-credentials: false
+
+      - name: Set up isolated Docker configuration
+        run: |
+          set -eu
+          config_dir="${RUNNER_TEMP}/docker-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          mkdir -p "$config_dir"
+          printf 'DOCKER_CONFIG=%s\n' "$config_dir" >> "$GITHUB_ENV"
 
       - name: Verify Dockerfile exists
         run: |
