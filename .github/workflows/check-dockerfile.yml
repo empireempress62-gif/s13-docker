@@ -15,7 +15,7 @@ concurrency:
 jobs:
   docker-build:
     name: Dockerfile and image build
-    runs-on: [self-hosted, linux, ubuntu, docker, shell, backend]
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

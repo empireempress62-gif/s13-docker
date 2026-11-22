@@ -50,7 +50,7 @@ Use `docker volume rm s13-training-camps-data` only when you intentionally want 
 
 ## CI/CD
 
-`.github/workflows/check-dockerfile.yml` runs on every push and pull request. The `Dockerfile and image build` check fails if the root `Dockerfile` is missing or the Docker image cannot be built. It uses a self-hosted runner with the labels `linux`, `ubuntu`, `docker`, `shell`, and `backend`, and requires access to Docker.
+`.github/workflows/check-dockerfile.yml` runs on every push and pull request. The `Dockerfile and image build` check fails if the root `Dockerfile` is missing or the Docker image cannot be built. It uses a GitHub-hosted Ubuntu runner with Docker installed, so no self-hosted runner is required for building and publishing.
 
 Pushes to `develop` also publish `empire20/s13-training-camps:latest` and a tag containing the full commit SHA. Other branches and pull requests build without publishing. Add a repository Actions secret named `DOCKERHUB_TOKEN` containing a Docker Hub access token for `empire20` with write access to this repository. The token is used only for publishing and is not stored in the source code.
 
